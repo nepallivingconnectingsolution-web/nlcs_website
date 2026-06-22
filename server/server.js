@@ -21,6 +21,11 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 dotenv.config();
 connectDB();
 
+const express = require("express");
+const path = require("path");
+
+
+
 const app = express();
 
 /* ---------- Core middleware ---------- */
