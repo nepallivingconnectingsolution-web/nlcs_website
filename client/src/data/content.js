@@ -11,7 +11,7 @@ legalName: 'Nepal Living Connecting IT Solution Pvt. Ltd.',
   phone: '+977 9812082030',
   phoneHref: 'tel:+9779812082030',
   email: 'info@nlcsitservice.com',
-  address: 'Near Goldhunga, Tarakeshwar-4, Kathmandu 44600, Nepal',
+  address: 'Nepal Living Connecting IT Solution Pvt. Ltd., Near Goldhunga, Tarakeshwar-4, Kathmandu 44600, Nepal',
   hours: [
     { days: 'Sunday – Friday', time: '09:00 AM – 06:00 PM' },
     { days: 'Saturday', time: 'Closed (Call or Email)' },

@@ -149,11 +149,11 @@ export default function Contact() {
         </div>
       </section>
 
-      <section className="map-sec">S
+      <section className="map-sec">
         <Reveal as="div">
           <iframe
             title="NLCITS office location"
-            src="https://www.google.com/maps?q=Tarakeshwar-4,+Kathmandu,+Nepal&output=embed"
+            src="https://www.google.com/maps?q=Nepal+Living+Connecting+IT+Solution+Pvt.+Ltd.,+Tarakeshwar-4,+Kathmandu,+Nepal&output=embed"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             allowFullScreen
