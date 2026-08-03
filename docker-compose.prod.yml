@@ -1,0 +1,36 @@
+# NLCS website stack — runs alongside the existing star-job-crm-main stack
+# on the same VPS, fully isolated (own database, own containers). The only
+# connection point is the shared `nlcs_shared` network, which lets the CRM's
+# existing nginx container reach `nlcs-api` by name. See DEPLOY.md.
+
+services:
+  nlcs-mongo:
+    image: mongo:7
+    container_name: nlcs-mongo
+    volumes:
+      - nlcs_mongo_data:/data/db
+    restart: always
+    networks:
+      - nlcs_shared
+
+  nlcs-api:
+    build:
+      context: ./server
+    container_name: nlcs-api
+    env_file:
+      - ./server/.env
+    depends_on:
+      - nlcs-mongo
+    volumes:
+      - nlcs_uploads:/app/uploads
+    restart: always
+    networks:
+      - nlcs_shared
+
+volumes:
+  nlcs_mongo_data:
+  nlcs_uploads:
+
+networks:
+  nlcs_shared:
+    external: true

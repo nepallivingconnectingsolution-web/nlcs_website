@@ -155,7 +155,7 @@ NODE_ENV=production npm start
 ```
 
 **Deployment notes**
-- For the Hostinger VPS setup (`nlcsitservice.com` + `api.nlcsitservice.com` on the same box, PM2 + nginx + self-hosted MongoDB), see **[`DEPLOY.md`](./DEPLOY.md)** and the nginx configs in **[`deploy/nginx/`](./deploy/nginx/)** — those are the concrete artifacts for this project's actual scope (no Redis, payments, OTP, or Cloudinary).
+- For the Hostinger VPS setup (`nlcsitservice.com` + `api.nlcsitservice.com` running as Docker containers alongside an existing CRM stack on the same box), see **[`DEPLOY.md`](./DEPLOY.md)**, **[`docker-compose.prod.yml`](./docker-compose.prod.yml)**, and the nginx snippets in **[`deploy/nginx/`](./deploy/nginx/)** — scoped to this project's actual needs (no Redis, payments, OTP, or Cloudinary).
 - Host the API (Render, Railway, a VPS, etc.) with your production `MONGO_URI` and a strong `JWT_SECRET`.
 - Host `client/dist` as static files (Netlify, Vercel, Nginx) and set `VITE_API_URL` to your API origin before building.
 - Set `CLIENT_URL` on the server to your deployed frontend origin so CORS allows it.
@@ -170,8 +170,9 @@ NODE_ENV=production npm start
 ```
 nlcs-mern/
 ├── package.json            # root scripts (dev, seed, build)
-├── DEPLOY.md               # Hostinger VPS deployment runbook
-├── deploy/nginx/           # nginx site configs (api + static client)
+├── DEPLOY.md               # Hostinger VPS deployment runbook (Docker-based, alongside existing CRM)
+├── docker-compose.prod.yml # NLCS API + MongoDB containers
+├── deploy/nginx/           # nginx server-block snippets to merge into the shared nginx container's config
 ├── server/
 │   ├── server.js           # app entry + middleware
 │   ├── config/db.js        # Mongo connection
