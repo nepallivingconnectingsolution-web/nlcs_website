@@ -14,6 +14,11 @@ const api = axios.create({
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('nlcs_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
+  // For file uploads, let the browser set the multipart boundary itself —
+  // our default JSON header would otherwise strip it and break parsing.
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
   return config;
 });
 

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import api from '../../api/axios.js';
 import Icon from '../../components/Icon.jsx';
 import Modal from '../../components/admin/Modal.jsx';
+import ImageUploadField from '../../components/admin/ImageUploadField.jsx';
 
 const empty = {
   title: '', category: 'Web Development', client: '', summary: '', description: '',
@@ -115,8 +116,7 @@ export default function AdminProjects() {
           <div className="field"><label>Description</label>
             <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></div>
           <div className="two">
-            <div className="field"><label>Image URL</label>
-              <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="https://…" /></div>
+            <ImageUploadField label="Project image" value={form.image} onChange={(url) => setForm({ ...form, image: url })} />
             <div className="field"><label>Project URL</label>
               <input value={form.url} onChange={(e) => setForm({ ...form, url: e.target.value })} placeholder="https://…" /></div>
           </div>

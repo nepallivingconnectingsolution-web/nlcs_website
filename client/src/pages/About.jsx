@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
 import Icon from '../components/Icon.jsx';
+import TiltCard from '../components/TiltCard.jsx';
+import SEO from '../components/SEO.jsx';
 import { values, company } from '../data/content.js';
 
 const beliefs = [
@@ -12,10 +14,16 @@ const beliefs = [
 export default function About() {
   return (
     <>
+      <SEO
+        title="About Us"
+        description={`Learn about ${company.legalName} — a Kathmandu-based team of developers, designers, and IT professionals building digital products for businesses in Nepal and beyond.`}
+        path="/about"
+      />
+
       <section className="page-hero">
         <div className="wrap">
           <Reveal>
-            <span className="eyebrow on-dark">About NLCS</span>
+            <span className="eyebrow on-dark">About NLCITS</span>
             <h1>Your trusted technology partner</h1>
             <p className="lead">
               At {company.legalName}, we help businesses embrace digital transformation through
@@ -72,11 +80,13 @@ export default function About() {
           <div className="beliefs-grid">
             {beliefs.map((b, i) => (
               <Reveal key={b.title} delay={(i % 3) * 70}>
-                <div className="belief">
-                  <div className="belief-ic"><Icon name={b.icon} size={24} /></div>
-                  <h4>{b.title}</h4>
-                  <p>{b.text}</p>
-                </div>
+                <TiltCard max={7}>
+                  <div className="belief">
+                    <div className="belief-ic"><Icon name={b.icon} size={24} /></div>
+                    <h4>{b.title}</h4>
+                    <p>{b.text}</p>
+                  </div>
+                </TiltCard>
               </Reveal>
             ))}
           </div>

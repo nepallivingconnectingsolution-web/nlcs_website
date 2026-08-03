@@ -1,36 +1,38 @@
-import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 
-/* Fade/slide content in when it scrolls into view. Falls back to visible
-   immediately when reduced motion is preferred. */
-export default function Reveal({ children, delay = 0, as: Tag = 'div', className = '', ...rest }) {
-  const ref = useRef(null);
-  const [shown, setShown] = useState(false);
+/**
+ * Fade/slide content in as it scrolls into view, powered by Framer Motion.
+ * Same API as the original CSS/IntersectionObserver version so every
+ * existing call site (`<Reveal delay={..}>`) keeps working unchanged.
+ */
+export default function Reveal({
+  children,
+  delay = 0,
+  as = 'div',
+  className = '',
+  y = 26,
+  once = true,
+  ...rest
+}) {
+  const prefersReduced = useReducedMotion();
+  const Tag = motion[as] || motion.div;
 
-  useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setShown(true);
-      return;
-    }
-    const el = ref.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShown(true);
-          io.unobserve(el);
-        }
-      },
-      { threshold: 0.14 }
+  if (prefersReduced) {
+    const Plain = as;
+    return (
+      <Plain className={className} {...rest}>
+        {children}
+      </Plain>
     );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+  }
 
   return (
     <Tag
-      ref={ref}
-      className={`reveal ${shown ? 'in' : ''} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={className}
+      initial={{ opacity: 0, y }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once, amount: 0.18 }}
+      transition={{ duration: 0.7, delay: delay / 1000, ease: [0.2, 0.7, 0.2, 1] }}
       {...rest}
     >
       {children}

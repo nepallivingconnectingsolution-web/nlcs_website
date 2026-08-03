@@ -32,6 +32,13 @@ export const errorHandler = (err, req, res, next) => {
     message = `Duplicate value for ${field}`;
   }
 
+  // Multer (file uploads)
+  if (err.name === 'MulterError') {
+    status = 400;
+    message =
+      err.code === 'LIMIT_FILE_SIZE' ? 'Image must be smaller than 5MB' : `Upload error: ${err.message}`;
+  }
+
   // JWT
   if (err.name === 'JsonWebTokenError') {
     status = 401;

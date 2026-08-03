@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import api from '../../api/axios.js';
 import Icon from '../../components/Icon.jsx';
 import { useAuth } from '../../context/AuthContext.jsx';
@@ -9,11 +10,27 @@ const cards = [
   { key: 'contacts', label: 'Total enquiries', icon: 'mail', to: '/admin/enquiries', accent: 'mint' },
   { key: 'services', label: 'Services', icon: 'layers', to: '/admin/services', accent: 'violet' },
   { key: 'projects', label: 'Projects', icon: 'briefcase', to: '/admin/projects', accent: 'amber' },
+  { key: 'testimonials', label: 'Testimonials', icon: 'star', to: '/admin/testimonials', accent: 'blue' },
+  { key: 'subscribers', label: 'Newsletter subscribers', icon: 'mail', to: '/admin/newsletter', accent: 'mint' },
 ];
+
+function formatDay(d) {
+  return new Date(d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
+
+const chartTooltipStyle = {
+  background: '#0A0E1A',
+  border: 'none',
+  borderRadius: 10,
+  color: '#fff',
+  fontSize: 13,
+  padding: '8px 12px',
+};
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState(null);
+  const [analytics, setAnalytics] = useState(null);
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -21,6 +38,10 @@ export default function Dashboard() {
       .get('/dashboard/stats')
       .then((res) => setStats(res.data.data))
       .catch((err) => setError(err.message));
+    api
+      .get('/dashboard/analytics?days=14')
+      .then((res) => setAnalytics(res.data.data))
+      .catch(() => {}); // non-critical — dashboard still works without charts
   }, []);
 
   return (
@@ -43,6 +64,52 @@ export default function Dashboard() {
           </Link>
         ))}
       </div>
+
+      {analytics && (
+        <div className="chart-grid">
+          <div className="chart-card">
+            <h3>Enquiries — last 14 days</h3>
+            <p className="sub">New contact form submissions per day.</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <AreaChart data={analytics.byDay} margin={{ left: -20, right: 10 }}>
+                <defs>
+                  <linearGradient id="enqGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#2F6BFF" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#2F6BFF" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#EAF0FA" />
+                <XAxis dataKey="date" tickFormatter={formatDay} fontSize={11.5} tickLine={false} axisLine={false} />
+                <YAxis allowDecimals={false} fontSize={11.5} tickLine={false} axisLine={false} width={28} />
+                <Tooltip labelFormatter={formatDay} contentStyle={chartTooltipStyle} />
+                <Area type="monotone" dataKey="count" name="Enquiries" stroke="#2F6BFF" strokeWidth={2.5} fill="url(#enqGrad)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+
+          <div className="chart-card">
+            <h3>Most requested services</h3>
+            <p className="sub">From all-time contact submissions.</p>
+            <ResponsiveContainer width="100%" height={220}>
+              <BarChart data={analytics.byService} layout="vertical" margin={{ left: 10, right: 16 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#EAF0FA" />
+                <XAxis type="number" allowDecimals={false} fontSize={11.5} tickLine={false} axisLine={false} />
+                <YAxis
+                  dataKey="service"
+                  type="category"
+                  width={110}
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(v) => (v.length > 16 ? `${v.slice(0, 16)}…` : v)}
+                />
+                <Tooltip contentStyle={chartTooltipStyle} />
+                <Bar dataKey="count" name="Enquiries" fill="#1FD1A3" radius={[0, 6, 6, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      )}
 
       <div className="panel">
         <div className="panel-head">

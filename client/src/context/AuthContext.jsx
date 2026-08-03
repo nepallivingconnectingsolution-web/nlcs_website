@@ -39,15 +39,21 @@ export function AuthProvider({ children }) {
       .finally(() => setLoading(false));
   }, []);
 
-  const login = useCallback(async (email, password) => {
-    const res = await api.post('/auth/login', { email, password });
-    const data = res.data?.data;
+   const applySession = useCallback((data) => {
     localStorage.setItem(TOKEN_KEY, data.token);
     const profile = { id: data.id, name: data.name, email: data.email, role: data.role };
     localStorage.setItem(USER_KEY, JSON.stringify(profile));
     setUser(profile);
     return profile;
-  }, []);
+ }, []);
+
+  const login = useCallback(
+    async (email, password) => {
+      const res = await api.post('/auth/login', { email, password });
+      return applySession(res.data?.data);
+    },
+    [applySession]
+ );
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
@@ -60,6 +66,7 @@ export function AuthProvider({ children }) {
     loading,
     login,
     logout,
+    applySession,
     isAuthenticated: !!user,
     isSuperAdmin: user?.role === 'superadmin',
     hasRole: (...roles) => user && (user.role === 'superadmin' || roles.includes(user.role)),

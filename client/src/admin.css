@@ -84,6 +84,8 @@
 .cell-icon { display: flex; align-items: center; gap: 10px; color: var(--blue); }
 .cell-icon strong { color: var(--text); }
 .cell-truncate { max-width: 320px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted); }
+.cell-sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+.pager { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 18px; font-size: 13.5px; color: var(--muted); }
 .mini-avatar { width: 30px; height: 30px; border-radius: 50%; background: var(--mist-2); color: var(--ink); font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center; }
 .you-tag { font-family: 'Space Mono'; font-size: 10px; color: var(--blue); margin-left: 8px; background: rgba(47, 107, 255, .12); padding: 2px 7px; border-radius: 6px; }
 
@@ -150,6 +152,24 @@
 .role-active { display: flex; flex-direction: column; }
 .role-active .checkbox { margin-top: 8px; }
 
+/* ---------- Image upload field ---------- */
+.upload-field { display: flex; align-items: center; gap: 14px; }
+.upload-preview {
+  width: 76px; height: 76px; border-radius: 12px; border: 1.5px dashed var(--line); background: var(--mist);
+  display: flex; align-items: center; justify-content: center; overflow: hidden; cursor: pointer; flex: 0 0 auto; position: relative;
+}
+.upload-preview img { width: 100%; height: 100%; object-fit: cover; }
+.upload-placeholder { color: var(--muted-light); }
+.upload-overlay { position: absolute; inset: 0; background: rgba(255, 255, 255, .8); display: flex; align-items: center; justify-content: center; color: var(--blue); }
+.upload-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- Dashboard charts ---------- */
+.chart-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 20px; margin-top: 20px; }
+.chart-card { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; }
+.chart-card h3 { font-size: 15px; margin-bottom: 4px; }
+.chart-card .sub { font-size: 12.5px; color: var(--muted); margin-bottom: 14px; }
+@media (max-width: 980px) { .chart-grid { grid-template-columns: 1fr; } }
+
 /* ---------- Login ---------- */
 .login-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: radial-gradient(900px 500px at 70% 10%, #14213e, var(--ink) 60%); }
 .login-card { background: #fff; border-radius: 22px; width: 100%; max-width: 410px; padding: 38px 34px; box-shadow: 0 40px 90px -30px rgba(0, 0, 0, .6); }
@@ -163,8 +183,22 @@
 .login-card input:focus { outline: none; border-color: var(--blue); background: #fff; }
 .login-submit { width: 100%; justify-content: center; margin-top: 22px; }
 .login-error { background: #fdecec; color: #c0392b; border: 1px solid #f5c6c6; padding: 10px 14px; border-radius: 10px; font-size: 13.5px; margin-top: 16px; }
+.login-success { background: #eafaf3; color: #157a5a; border: 1px solid #b9ecd7; padding: 10px 14px; border-radius: 10px; font-size: 13.5px; margin-top: 16px; }
 .login-back { display: block; text-align: center; margin-top: 20px; color: var(--muted); font-size: 13.5px; }
 .login-back:hover { color: var(--blue); }
+
+.pw-wrap { position: relative; }
+.pw-wrap input { padding-right: 44px; }
+.pw-toggle {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  width: 32px; height: 32px; border: 0; background: none; border-radius: 8px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; color: var(--muted); transition: color .2s, background .2s;
+}
+.pw-toggle:hover { color: var(--ink); background: var(--mist); }
+.login-links { display: flex; justify-content: flex-end; margin-top: 10px; }
+.login-links a { color: var(--muted); font-size: 13px; }
+.login-links a:hover { color: var(--blue); }
+.login-hint { color: var(--muted); font-size: 13px; margin-top: -6px; margin-bottom: 4px; line-height: 1.5; }
 
 /* ---------- Loading ---------- */
 .admin-loading { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: var(--mist); }

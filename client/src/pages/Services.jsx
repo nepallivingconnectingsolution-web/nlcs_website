@@ -1,15 +1,24 @@
 import { Link } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
 import Icon from '../components/Icon.jsx';
+import TiltCard from '../components/TiltCard.jsx';
+import SEO from '../components/SEO.jsx';
+import FAQAccordion from '../components/FAQAccordion.jsx';
 import { ServiceCard } from '../components/Cards.jsx';
 import useFetch from '../hooks/useFetch.js';
-import { fallbackServices, process } from '../data/content.js';
+import { fallbackServices, process, faqs } from '../data/content.js';
 
 export default function Services() {
   const { data: services, loading } = useFetch('/services', { fallback: fallbackServices });
 
   return (
     <>
+      <SEO
+        title="Our Services"
+        description="Website development, app development, custom software, CRM/ERP systems, digital marketing, and IT consulting — full-stack solutions for growing businesses."
+        path="/services"
+      />
+
       <section className="page-hero">
         <div className="wrap">
           <Reveal>
@@ -25,13 +34,17 @@ export default function Services() {
 
       <section className="services light">
         <div className="wrap">
-          {loading && <p className="muted-center">Loading services…</p>}
           <div className="svc-grid">
-            {(services || []).map((s, i) => (
-              <Reveal key={s._id || s.slug} delay={(i % 3) * 70}>
-                <ServiceCard service={s} index={i} />
-              </Reveal>
-            ))}
+            {loading &&
+              Array.from({ length: 6 }).map((_, i) => <div key={i} className="skel skel-card" />)}
+            {!loading &&
+              (services || []).map((s, i) => (
+                <Reveal key={s._id || s.slug} delay={(i % 3) * 70}>
+                  <TiltCard max={7}>
+                    <ServiceCard service={s} index={i} />
+                  </TiltCard>
+                </Reveal>
+              ))}
           </div>
         </div>
       </section>
@@ -58,6 +71,8 @@ export default function Services() {
           </div>
         </div>
       </section>
+
+      <FAQAccordion items={faqs} eyebrow="Common Questions" title="Everything you might be wondering" />
 
       <section className="cta-band">
         <div className="wrap">

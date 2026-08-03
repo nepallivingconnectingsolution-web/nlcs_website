@@ -8,6 +8,9 @@ const nav = [
   { to: '/admin/enquiries', label: 'Enquiries', icon: 'inbox' },
   { to: '/admin/services', label: 'Services', icon: 'layers' },
   { to: '/admin/projects', label: 'Projects', icon: 'briefcase' },
+  { to: '/admin/testimonials', label: 'Testimonials', icon: 'star' },
+  { to: '/admin/stats', label: 'Homepage Stats', icon: 'target' },
+  { to: '/admin/newsletter', label: 'Newsletter', icon: 'mail' },
   { to: '/admin/users', label: 'Users', icon: 'shield', superOnly: true },
 ];
 
@@ -36,7 +39,7 @@ export default function AdminLayout() {
             <defs><linearGradient id="ag" x1="0" y1="0" x2="40" y2="40"><stop stopColor="#2F6BFF" /><stop offset="1" stopColor="#1FD1A3" /></linearGradient></defs>
           </svg>
           <div>
-            <strong>NLCS</strong>
+            <strong>NLCITS</strong>
             <span>Control Panel</span>
           </div>
         </div>

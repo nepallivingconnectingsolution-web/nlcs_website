@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 import Reveal from '../components/Reveal.jsx';
 import Icon from '../components/Icon.jsx';
+import SEO from '../components/SEO.jsx';
 import api from '../api/axios.js';
 import { company, serviceOptions } from '../data/content.js';
 
@@ -29,23 +31,27 @@ export default function Contact() {
     setStatus({ state: 'loading', message: '' });
     try {
       const res = await api.post('/contacts', form);
-      setStatus({
-        state: 'success',
-        message: res.data?.message || "Thanks! We'll be in touch within one business day.",
-      });
+      const successMsg = res.data?.message || "Thanks! We'll be in touch within one business day.";
+      setStatus({ state: 'success', message: successMsg });
+      toast.success(successMsg);
       setForm(initial);
     } catch (error) {
-      setStatus({
-        state: 'error',
-        message:
-          error.message ||
-          "We couldn't send your message right now. Please email us directly at " + company.email + '.',
-      });
+      const errMsg =
+        error.message ||
+        "We couldn't send your message right now. Please email us directly at " + company.email + '.';
+      setStatus({ state: 'error', message: errMsg });
+      toast.error(errMsg);
     }
   };
 
   return (
     <>
+      <SEO
+        title="Contact Us"
+        description={`Get in touch with ${company.name} in Kathmandu, Nepal. Call, email, or send us a message about your web, app, or software project.`}
+        path="/contact"
+      />
+
       <section className="page-hero">
         <div className="wrap">
           <Reveal>
@@ -141,6 +147,18 @@ export default function Contact() {
             </form>
           </Reveal>
         </div>
+      </section>
+
+      <section className="map-sec">S
+        <Reveal as="div">
+          <iframe
+            title="NLCITS office location"
+            src="https://www.google.com/maps?q=Tarakeshwar-4,+Kathmandu,+Nepal&output=embed"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+        </Reveal>
       </section>
     </>
   );

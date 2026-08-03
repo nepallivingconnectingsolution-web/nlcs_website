@@ -11,3 +11,5 @@ npm-debug.log*
 .idea/
 client/.env
 server/.env
+server/uploads/*
+!server/uploads/.gitkeep

@@ -4,6 +4,8 @@ import connectDB from '../config/db.js';
 import Service from '../models/Service.js';
 import Project from '../models/Project.js';
 import User from '../models/User.js';
+import Testimonial from '../models/Testimonial.js';
+import Stat from '../models/Stat.js';
 
 dotenv.config();
 
@@ -109,6 +111,46 @@ const projects = [
   },
 ];
 
+const stats = [
+  { label: 'Projects Delivered', value: 60, suffix: '+', order: 1 },
+  { label: 'Client Satisfaction', value: 98, suffix: '%', order: 2 },
+  { label: 'Years Building', value: 5, suffix: '+', order: 3 },
+  { label: 'Support Availability', value: 24, suffix: '/7', order: 4 },
+];
+
+const testimonials = [
+  {
+    name: 'Sujata Rana',
+    role: 'Founder',
+    company: 'Himalayan Handicrafts',
+    quote:
+      'NLCITS took our shop online in weeks, not months. The site is fast, easy to update ourselves, and orders have grown every month since launch.',
+    rating: 5,
+    featured: true,
+    order: 1,
+  },
+  {
+    name: 'Bikash Shrestha',
+    role: 'Operations Manager',
+    company: 'Everest Logistics',
+    quote:
+      'The custom inventory system NLCITS built replaced three spreadsheets and a lot of guesswork. Their support after launch has been just as strong as the build itself.',
+    rating: 5,
+    featured: true,
+    order: 2,
+  },
+  {
+    name: 'Anjali Gurung',
+    role: 'Marketing Lead',
+    company: 'Kathmandu Wellness Co.',
+    quote:
+      "Clear communication from day one, a design that actually matches our brand, and a team that genuinely cared about getting it right. Couldn't ask for more.",
+    rating: 5,
+    featured: true,
+    order: 3,
+  },
+];
+
 const run = async () => {
   await connectDB();
   try {
@@ -121,6 +163,13 @@ const run = async () => {
     await Project.deleteMany();
     await Project.insertMany(projects);
     console.log(`✓ ${projects.length} projects seeded`);
+
+    await Testimonial.deleteMany();
+    await Testimonial.insertMany(testimonials);
+    console.log(`✓ ${testimonials.length} testimonials seeded`);
+    await Stat.deleteMany();
+    await Stat.insertMany(stats);
+    console.log(`✓ ${stats.length} stats seeded`);
 
     const adminEmail = (process.env.ADMIN_EMAIL || 'admin@nlcsitservice.com').toLowerCase();
     const existing = await User.findOne({ email: adminEmail });

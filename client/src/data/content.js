@@ -3,8 +3,8 @@
 // unreachable, the UI falls back to these so the site always renders.
 
 export const company = {
-  name: 'NLCS Pvt. Ltd.',
-  legalName: 'Nepal Living Connecting Solution Pvt. Ltd.',
+  name: 'NLCITS Pvt. Ltd.',
+legalName: 'Nepal Living Connecting IT Solution Pvt. Ltd.',
   tagline: 'Transforming ideas into digital solutions',
   blurb:
     'We build reliable web, app, and software products for businesses across Nepal and beyond.',
@@ -74,3 +74,75 @@ export const fallbackProjects = [
 ];
 
 export const serviceOptions = fallbackServices.map((s) => s.title).concat('E-Commerce Solution', 'Other');
+
+// Fallback testimonials (mirror the seed data) — shown if the API is unreachable.
+export const fallbackTestimonials = [
+  {
+    _id: 't1',
+    name: 'Sujata Rana',
+    role: 'Founder',
+    company: 'Himalayan Handicrafts',
+    quote:
+      'NLCITS took our shop online in weeks, not months. The site is fast, easy to update ourselves, and orders have grown every month since launch.',
+    rating: 5,
+  },
+  {
+    _id: 't2',
+    name: 'Bikash Shrestha',
+    role: 'Operations Manager',
+    company: 'Everest Logistics',
+    quote:
+      'The custom inventory system NLCITS built replaced three spreadsheets and a lot of guesswork. Their support after launch has been just as strong as the build itself.',
+    rating: 5,
+  },
+  {
+    _id: 't3',
+    name: 'Anjali Gurung',
+    role: 'Marketing Lead',
+    company: 'Kathmandu Wellness Co.',
+    quote:
+      "Clear communication from day one, a design that actually matches our brand, and a team that genuinely cared about getting it right. Couldn't ask for more.",
+    rating: 5,
+  },
+];
+
+export const fallbackStats = [
+  { value: 60, suffix: '+', label: 'Projects Delivered' },
+  { value: 98, suffix: '%', label: 'Client Satisfaction' },
+  { value: 5, suffix: '+', label: 'Years Building' },
+  { value: 24, suffix: '/7', label: 'Support Availability' },
+];
+
+export const marqueeItems = [
+  'React & Next.js',
+  'Node.js & Express',
+  'MongoDB & PostgreSQL',
+  'React Native',
+  'AWS & Cloud Hosting',
+  'SEO & Digital Marketing',
+  'CRM & ERP Systems',
+  'UI/UX Design',
+];
+
+export const faqs = [
+  {
+    q: 'How long does a typical website project take?',
+    a: 'Most business websites take 3–6 weeks from kickoff to launch, depending on scope. Custom software and larger platforms typically run 8–14 weeks. We\'ll give you a realistic timeline before any work begins.',
+  },
+  {
+    q: 'Do you work with businesses outside Nepal?',
+    a: "Yes — while we're based in Kathmandu, a significant share of our clients are international. We work across time zones and communicate over email, calls, and whichever tools you already use.",
+  },
+  {
+    q: "What's included after a project launches?",
+    a: 'Every project includes a post-launch support window for bug fixes. Beyond that, we offer ongoing maintenance packages covering updates, monitoring, backups, and small feature requests.',
+  },
+  {
+    q: 'Can you help redesign an existing website or system?',
+    a: "Absolutely. We regularly take over and modernize existing codebases — whether that's a visual refresh, a performance overhaul, or migrating to a more maintainable tech stack.",
+  },
+  {
+    q: 'How do you handle pricing?',
+    a: "Most projects are quoted as a fixed price based on a clear scope, so there are no surprises. For ongoing work or evolving projects, we can also work on a monthly retainer basis.",
+  },
+];

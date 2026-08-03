@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function Logo({ label = 'NLCS', to = '/', className = '' }) {
+export default function Logo({ label = 'NLCITS', to = '/', className = '' }) {
   return (
     <Link to={to} className={`brand ${className}`} aria-label={`${label} home`}>
       <svg className="brand-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
