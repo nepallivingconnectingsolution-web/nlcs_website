@@ -3,10 +3,16 @@
 This VPS (`187.127.153.218`) already runs the `star-job-crm-main` stack (Django CRM,
 Postgres, Redis, Celery) behind a single `nginx` Docker container that owns ports
 80/443, currently serving `sjcrm.nlcsitservice.com`. This guide adds the NLCS
-website (`nlcsitservice.com` + `api.nlcsitservice.com`) as a **separate, isolated**
-Docker stack, sharing only the nginx container as an entry point. The CRM's own
-containers, database, and config are never modified except for one additive edit
-(step 4).
+website (`nlcsitservice.com`) as a **separate, isolated** Docker stack, sharing
+only the nginx container as an entry point. The CRM's own containers, database,
+and config are never modified except for one additive edit (step 4).
+
+The API is served from the **same domain** under `/api/` and `/uploads/`
+(path-based routing), not from a separate `api.nlcsitservice.com` subdomain —
+that subdomain's DNS got stuck propagating on Hostinger's side (confirmed via
+independent public resolvers, not just local caching) and going through their
+support was the slower path, so this routes around it entirely using the
+domain that's already working. No extra DNS record or cert is needed for it.
 
 Scope check: this app is a contact-form/CMS company site — Node/Express + MongoDB
 + static React build + SMTP. No Redis, no payment gateway, no OTP, no Cloudinary —
@@ -19,17 +25,30 @@ and can only prepare the files in this repo.
 
 ## 1. Point DNS at the VPS
 
-In Hostinger hPanel → Domains → `nlcsitservice.com` → DNS Zone, add A records:
+In Hostinger hPanel → Domains → `nlcsitservice.com` → DNS Zone, add A and AAAA
+records for the apex and `www` (the VPS's IPv6 is `2a02:4780:63:9668::1` —
+check with `ip -6 addr show scope global` if it's ever different):
 
 | Type | Name | Points to |
 |---|---|---|
 | A | `@` | `187.127.153.218` |
-| A | `www` | `187.127.153.218` |
-| A | `api` | `187.127.153.218` |
+| AAAA | `@` | `2a02:4780:63:9668::1` |
+| A | `www` | `187.127.153.218` (only needed if `www` isn't already a CNAME to `@`) |
 
-(`sjcrm` should already exist — leave it as-is.) DNS can take a few minutes to
-propagate; the rest of the steps can proceed while you wait, but certbot (step 9)
-needs it to have resolved.
+(`sjcrm` should already exist — leave it as-is.) Add **both** A and AAAA for
+the apex — if only one is set and the other still points at Hostinger's
+default/parking address from before, IPv6-preferring clients (including
+Let's Encrypt's validation servers) will hit the wrong place. No `api` record
+needed — see the note above about serving the API from this same domain.
+
+DNS can take anywhere from a couple minutes to over an hour to propagate on
+Hostinger; the rest of the steps can proceed while you wait, but certbot
+(step 9) needs it to have resolved. If a *newly created* record (not an edit
+to an existing one) seems stuck for over 30-45 minutes even after checking via
+an independent public resolver (e.g. `https://cloudflare-dns.com/dns-query?name=YOURDOMAIN&type=A`
+with header `accept: application/dns-json`) — not just the VPS's own cache —
+try deleting and re-adding it before waiting further; if it's still stuck,
+that's a Hostinger-side issue worth contacting their support about.
 
 ## 2. Back up the CRM's config before touching anything
 
@@ -124,13 +143,18 @@ Fill in `JWT_SECRET` (generate one: `node -e "console.log(require('crypto').rand
 ## 7. Build the frontend
 
 ```bash
-docker run --rm -v $(pwd)/client:/app -w /app node:22-alpine sh -c \
-  "npm ci && VITE_API_URL=https://api.nlcsitservice.com npm run build"
+docker run --rm -v $(pwd)/client:/app -w /app node:22-alpine npm ci
+docker run --rm -v $(pwd)/client:/app -w /app node:22-alpine npm run build
 ```
 
 This builds `client/dist` using a throwaway Node container — no need to install
-Node on the host. `VITE_API_URL` must be set at build time so the deployed site
-calls the right API origin.
+Node on the host. **Deliberately leave `VITE_API_URL` unset** — the client then
+calls relative `/api` paths, which land on the same origin nginx serves the
+site from (see step 10), avoiding the stuck `api.` subdomain entirely.
+
+(Run as two separate commands, not chained with `&&` inside a quoted `sh -c`
+string — some browser-based terminals mangle pasted commands containing
+quotes/ampersands, silently corrupting them.)
 
 ## 8. nginx phase 1 — HTTP-only, so certbot can verify domain ownership
 
@@ -155,15 +179,15 @@ Confirm it's live: `curl http://nlcsitservice.com` should return the
 ## 9. Get TLS certificates
 
 This VPS already has a working script for this (`deploy/05-obtain-ssl-cert.sh`,
-used to get the `sjcrm` cert) — it issues one cert per domain, so run it three
-times, once per new domain. Replace `you@example.com` with a real email you
-want Let's Encrypt renewal notices sent to:
+used to get the `sjcrm` cert) — it issues one cert per domain, so run it twice
+(no `api.` cert needed — see the note at the top of this file). Replace
+`you@example.com` with a real email you want Let's Encrypt renewal notices
+sent to:
 
 ```bash
 cd /home/nlcits/star-job-crm-main
 ./deploy/05-obtain-ssl-cert.sh nlcsitservice.com you@example.com
 ./deploy/05-obtain-ssl-cert.sh www.nlcsitservice.com you@example.com
-./deploy/05-obtain-ssl-cert.sh api.nlcsitservice.com you@example.com
 ```
 
 Each should end with "Certificate obtained for ..." and print next-step
@@ -173,10 +197,9 @@ which accounts for this being a shared nginx serving multiple sites.
 
 ## 10. nginx phase 2 — swap in the full config with SSL
 
-Open the file and **delete the phase-1 blocks you added in step 8** (the two
-`server { listen 80; ... }` blocks for `nlcsitservice.com`/`www` and
-`api.nlcsitservice.com` — leave the CRM's `sjcrm.nlcsitservice.com` blocks
-untouched):
+Open the file and **delete the phase-1 block you added in step 8** (the
+`server { listen 80; ... }` block for `nlcsitservice.com`/`www` — leave the
+CRM's `sjcrm.nlcsitservice.com` blocks untouched):
 
 ```bash
 nano /home/nlcits/star-job-crm-main/deploy/nginx.conf
@@ -216,7 +239,7 @@ the admin panel instead.
 ## 13. Verify
 
 - `https://nlcsitservice.com` — the site
-- `https://api.nlcsitservice.com/api/health` — should return `{"success":true,...}`
+- `https://nlcsitservice.com/api/health` — should return `{"success":true,...}`
 - `https://sjcrm.nlcsitservice.com` — confirm the CRM is unaffected
 
 ---
@@ -227,9 +250,9 @@ the admin panel instead.
 cd /home/nlcits/nlcs-website
 git pull
 
-# Rebuild frontend
-docker run --rm -v $(pwd)/client:/app -w /app node:22-alpine sh -c \
-  "npm ci && VITE_API_URL=https://api.nlcsitservice.com npm run build"
+# Rebuild frontend (VITE_API_URL deliberately left unset — see step 7)
+docker run --rm -v $(pwd)/client:/app -w /app node:22-alpine npm ci
+docker run --rm -v $(pwd)/client:/app -w /app node:22-alpine npm run build
 
 # Rebuild + restart the API
 docker compose -f docker-compose.prod.yml up -d --build nlcs-api
