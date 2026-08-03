@@ -154,23 +154,22 @@ Confirm it's live: `curl http://nlcsitservice.com` should return the
 
 ## 9. Get TLS certificates
 
+This VPS already has a working script for this (`deploy/05-obtain-ssl-cert.sh`,
+used to get the `sjcrm` cert) — it issues one cert per domain, so run it three
+times, once per new domain. Replace `you@example.com` with a real email you
+want Let's Encrypt renewal notices sent to:
+
 ```bash
 cd /home/nlcits/star-job-crm-main
-docker run --rm \
-  -v $(pwd)/deploy/certbot/www:/var/www/certbot \
-  -v $(pwd)/deploy/certbot/conf:/etc/letsencrypt \
-  certbot/certbot certonly --webroot -w /var/www/certbot \
-  -d nlcsitservice.com -d www.nlcsitservice.com
-
-docker run --rm \
-  -v $(pwd)/deploy/certbot/www:/var/www/certbot \
-  -v $(pwd)/deploy/certbot/conf:/etc/letsencrypt \
-  certbot/certbot certonly --webroot -w /var/www/certbot \
-  -d api.nlcsitservice.com
+./deploy/05-obtain-ssl-cert.sh nlcsitservice.com you@example.com
+./deploy/05-obtain-ssl-cert.sh www.nlcsitservice.com you@example.com
+./deploy/05-obtain-ssl-cert.sh api.nlcsitservice.com you@example.com
 ```
 
-Each should end with "Successfully received certificate" and show where it
-saved the cert (matches the paths phase 2 expects).
+Each should end with "Certificate obtained for ..." and print next-step
+instructions — **ignore those printed instructions** (they're generic for this
+script and assume a single-site nginx.conf); follow step 10 below instead,
+which accounts for this being a shared nginx serving multiple sites.
 
 ## 10. nginx phase 2 — swap in the full config with SSL
 
